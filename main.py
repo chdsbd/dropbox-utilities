@@ -1,8 +1,7 @@
 import argparse
 import os
-import time
 import datetime
-import pprint
+import shutil
 
 def validate_path(string):
     if os.path.isdir(string):
@@ -13,23 +12,23 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Organize screenshots into folders by year.')
     parser.add_argument('path', metavar='P', type=validate_path,
                     help='Path to screenshots folder.')
-
     args = parser.parse_args()
-    screenshots = os.listdir(args.path)
+    path = args.path
 
-    print(f'There are { len(screenshots) } items in this folder.')
-    years = {}
+    screenshots = os.listdir(path)
+
     for screenshot in screenshots:
-        created = datetime.datetime.fromtimestamp(os.path.getctime(os.path.join(args.path, screenshot)))
-        modified = datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(args.path, screenshot)))
-        if created < modified:
-            try:
-                years[created.year] += 1
-            except KeyError:
-                years[created.year] = 1
-        else:
-            try:
-                years[modified.year] += 1
-            except KeyError:
-                years[modified.year] = 1
-    pprint.pprint(years)
+        if not screenshot.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
+            continue
+        created = datetime.datetime.fromtimestamp(os.path.getctime(os.path.join(path, screenshot)))
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(path, screenshot)))
+        year = created.year if created < modified else modified.year
+
+        folder_path = os.path.join(path, str(year))
+        if not os.path.isdir(folder_path):
+            os.makedirs(folder_path)
+
+        if os.path.exists(os.path.join(path, str(year), screenshot)):
+            continue
+        screenshot_path = os.path.join(path, screenshot)
+        shutil.move(screenshot_path, folder_path)
