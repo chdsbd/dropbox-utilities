@@ -9,7 +9,7 @@ def validate_path(string):
     raise argparse.ArgumentTypeError('Directory must exist')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Organize screenshots into folders by year.')
+    parser = argparse.ArgumentParser(description='Organize screenshots into folders by year. Duplicates are left in place.')
     parser.add_argument('path', metavar='P', type=validate_path,
                     help='Path to screenshots folder.')
     args = parser.parse_args()
