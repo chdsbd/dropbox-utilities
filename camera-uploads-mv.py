@@ -46,9 +46,9 @@ def organize_photo(directory, filename, dest_root):
 
         If folder structure doesn't exist, it will be created.
     """
-    created = find_creation_date(os.path.join(directory, filename))
+    date_created = find_creation_date(os.path.join(directory, filename))
     photo_path = os.path.join(directory, filename)
-    destination_directory = os.path.join(dest_root, str(created.year), str(created.month))
+    destination_directory = os.path.join(dest_root, str(date_created.year), str(date_created.month))
     destination_path = os.path.join(destination_directory, filename)
     os.makedirs(destination_directory, exist_ok=True)
     print(f'Moving {photo_path} -> {destination_path}')
