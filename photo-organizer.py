@@ -53,25 +53,29 @@ def organize_file(directory, filename, destination_root, organize_by_year=False)
     file_path = os.path.join(directory, filename)
     destination_directory = os.path.join(destination_root, str(creation_date.year))
     if not organize_by_year:
-        destination_directory = os.path.join(destination_directory, str(creation_date.month))
+        month = creation_date.strftime("%-m - %B")
+        destination_directory = os.path.join(destination_directory, month)
     destination_path = os.path.join(destination_directory, filename)
 
     os.makedirs(destination_directory, exist_ok=True)
-    print(f'Moving {file_path} -> {destination_path}')
-    shutil.move(file_path, destination_path)
+
+    if not os.path.exists(destination_path):
+        shutil.move(file_path, destination_path)
+    else:
+        print(f'Warning: File already exists at {destination_path}, leaving file at {file_path}')
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Organize photos in camera uploads folder into separate tree structure by date.'
+        description='Organize photos in camera uploads folder into separate tree structure by date. Duplicates will be left alone.'
     )
     parser.add_argument(
         'camera_uploads',
-        metavar='U',
+        metavar='src',
         type=validate_path,
         help='Path to Camera Uploads directory where photos need to be organized.')
     parser.add_argument(
         'photos_directory',
-        metavar='P',
+        metavar='dest',
         type=validate_path,
         help='Path to Photos directory where photos should be organized into tree by date.')
     parser.add_argument(
