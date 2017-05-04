@@ -60,14 +60,14 @@ def main():
     )
     parser.add_argument(
         'camera_uploads',
-        metavar='C',
+        metavar='U',
         type=validate_path,
-        help='Path to directory (Camera Uploads) where photos need to be organized.')
+        help='Path to Camera Uploads directory where photos need to be organized.')
     parser.add_argument(
         'photos_directory',
         metavar='P',
         type=validate_path,
-        help='Path to (Photos) directory where photos should be organized into tree by date.')
+        help='Path to Photos directory where photos should be organized into tree by date.')
 
     args = parser.parse_args()
 
