@@ -34,25 +34,31 @@ def find_creation_date(file_path):
     """
     with open(file_path, 'rb') as f:
         try:
-            created = exifread.process_file(f, details=False, stop_tag='DateTimeOriginal')['EXIF DateTimeOriginal']
-            return datetime.strptime(str(created), '%Y:%m:%d %H:%M:%S')
+            date_created = exifread.process_file(
+                f,
+                details=False,
+                stop_tag='DateTimeOriginal')['EXIF DateTimeOriginal']
+            return datetime.strptime(str(date_created), '%Y:%m:%d %H:%M:%S')
         except KeyError:
-            created = datetime.fromtimestamp(os.path.getctime(file_path))
-            modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-            return created if created < modified else modified
+            date_created = datetime.fromtimestamp(os.path.getctime(file_path))
+            date_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
+            return date_created if date_created < date_modified else date_modified
 
-def organize_photo(directory, filename, dest_root):
+def organize_file(directory, filename, destination_root, organize_by_year=False):
     """Move photo to proper directory under the photo path provided in arguments.
 
         If folder structure doesn't exist, it will be created.
     """
-    date_created = find_creation_date(os.path.join(directory, filename))
-    photo_path = os.path.join(directory, filename)
-    destination_directory = os.path.join(dest_root, str(date_created.year), str(date_created.month))
+    creation_date = find_creation_date(os.path.join(directory, filename))
+    file_path = os.path.join(directory, filename)
+    destination_directory = os.path.join(destination_root, str(creation_date.year))
+    if not organize_by_year:
+        destination_directory = os.path.join(destination_directory, str(creation_date.month))
     destination_path = os.path.join(destination_directory, filename)
+
     os.makedirs(destination_directory, exist_ok=True)
-    print(f'Moving {photo_path} -> {destination_path}')
-    shutil.move(photo_path, destination_path)
+    print(f'Moving {file_path} -> {destination_path}')
+    shutil.move(file_path, destination_path)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -68,19 +74,23 @@ def main():
         metavar='P',
         type=validate_path,
         help='Path to Photos directory where photos should be organized into tree by date.')
+    parser.add_argument(
+        '-y',
+        '--organize-by-year',
+        action='store_true',
+        help='Organize photos into folders by year instead of year and month.')
 
     args = parser.parse_args()
 
     uploads_path = args.camera_uploads
     dest_path = args.photos_directory
+    organize_by_year = args.organize_by_year
 
-    uploads_photos = os.listdir(uploads_path)
-
-    for photo in uploads_photos:
+    uploaded_photos = os.listdir(uploads_path)
+    for photo in uploaded_photos:
         photo_path = os.path.join(uploads_path, photo)
-        if not is_photo_video(photo_path):
-            continue
-        organize_photo(uploads_path, photo, dest_path)
+        if is_photo_video(photo_path):
+            organize_file(uploads_path, photo, dest_path, organize_by_year=organize_by_year)
 
 if __name__ == '__main__':
     main()
