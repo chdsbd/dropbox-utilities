@@ -1,7 +1,7 @@
 import argparse
 from datetime import datetime
+import logging
 import os
-import pprint
 import shutil
 
 import exifread
@@ -60,9 +60,10 @@ def organize_file(directory, filename, destination_root, organize_by_year=False)
     os.makedirs(destination_directory, exist_ok=True)
 
     if not os.path.exists(destination_path):
+        logging.info(f'Moving file from {file_path} to {destination_path}')
         shutil.move(file_path, destination_path)
     else:
-        print(f'Warning: File already exists at {destination_path}, leaving file at {file_path}')
+        logging.warning(f'File already exists at {destination_path}, leaving file at {file_path}')
 
 def main():
     parser = argparse.ArgumentParser(
