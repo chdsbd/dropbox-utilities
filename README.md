@@ -21,5 +21,3 @@ optional arguments:
                         and month.
 ```
 
-## Screenshot-Finder
-Search Photos directory for screenshots from iPhone via Camera Uploads
