@@ -8,13 +8,19 @@ import exifread
 
 
 def validate_path(path):
-    """Return boolean of whether or not path is valid"""
+    """
+    Return string representation of path if valid.
+
+    Exception is thrown if invalid
+    """
     if os.path.isdir(path):
         return path
     raise argparse.ArgumentTypeError('Directory must exist')
 
 def is_photo_video(photo_path):
-    """Return boolean whether or not file is photo/video"""
+    """
+    Return boolean whether or not file is photo/video
+    """
     return photo_path.lower().endswith(
         (
         '.png',
@@ -27,10 +33,11 @@ def is_photo_video(photo_path):
         )
 
 def find_creation_date(file_path):
-    """Return datetime date for creation date for photo
+    """
+    Return datetime date for creation date for photo
 
-        We check for EXIF photo creation metadata and use that if possible.
-        We fall back to returning the oldest of the date modified or created
+    We check for EXIF photo creation metadata and use that if possible.
+    We fall back to returning the oldest of the date modified or created
     """
     with open(file_path, 'rb') as f:
         try:
@@ -45,9 +52,10 @@ def find_creation_date(file_path):
             return date_created if date_created < date_modified else date_modified
 
 def organize_file(directory, filename, destination_root, organize_by_year=False):
-    """Move photo to proper directory under the photo path provided in arguments.
+    """
+    Move photo to proper directory under the photo path provided in arguments.
 
-        If folder structure doesn't exist, it will be created.
+    If folder structure doesn't exist, it will be created.
     """
     creation_date = find_creation_date(os.path.join(directory, filename))
     file_path = os.path.join(directory, filename)
